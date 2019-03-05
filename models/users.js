@@ -6,12 +6,43 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const sha256 = require('sha256');
 
+
+
 var userSchema = new mongoose.Schema({
-    name: 'string',
-    email: 'string',
-    password: 'string',
-    phone: 'string'
+    name: {
+        type: 'string',
+        required: true
+    },
+    email: {
+        type: 'string',
+        required: true
+    },
+    password: {
+        type: 'string',
+        required: true
+    },
+    phone: {
+        type: 'string',
+        required: true
+    },
+    interests: {
+        required: false
+    },
+    favorites: {
+        required: false
+    },
+    isStudent: {
+        type: 'boolean',
+        default: true,
+        required: true
+    },
+    isOnboarded: {
+        type: 'boolean',
+        default: false,
+        required: false
+    }
 });
+
 
 var UserModel = mongoose.model('user', userSchema);
 
@@ -35,6 +66,7 @@ function modifyUser(userId, name, email, password, phone) {
         phone: phone
     });
 }
+
 
 module.exports = {
     modifyUser: modifyUser,

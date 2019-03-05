@@ -10,7 +10,12 @@ const code_gen = {
     1: 'Error',
     2: 'Invalid Password',
     3: 'Invalid email or User does not exisit',
-    4: 'Logout successfull'
+    4: 'Logout successfull',
+    5: 'Something went wrong, try again later!',
+    6: 'User already Exists',
+    7: 'No Auth token provided or Invalid Auth token provided',
+    8: 'Invalid Auth Token',
+    9: 'User already onboarded'
 };
 function generateResponse(code, result, message) {
     if (!message) {
@@ -44,14 +49,15 @@ function verifyUserToken(token) {
 
 /* Generate token*/
 function generateUserToken(userId, res) {
-    userObject.UserModel.findById(userId, (err, user) => {
-        if (err || !user) {
+    userObject.UserModel.findById(userId, (err, usr) => {
+        if (err || !usr) {
             console.log('Error finding user or user doesn\'t exist --> ', err);
+            res.send(generateResponse(5));
         } else {
-            console.log(user.email);
+            console.log(usr.email);
             const payload = {
-                _id: user._id,
-                expires: '1d'
+                _id: usr._id,
+                isStudent: usr.isStudent
             }
             const generatedToken = jsonwebtoken.sign(payload, environmentVariables.apiIdentifier);
             console.log('Generated Token is : ', generatedToken);
@@ -60,6 +66,7 @@ function generateUserToken(userId, res) {
         }
     });
 }
+
 
 
 module.exports = {
