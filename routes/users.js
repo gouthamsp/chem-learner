@@ -11,7 +11,7 @@ router.post('/userPreferences/', (req, res) => {
   const auth_token = req.headers['authorization'] || '';
   const decodedToken = common.decodeUserToken(auth_token);
   if (decodedToken) {
-    userModel.UserModel.findOneAndUpdate(decodedToken._id, (err, usr) => {
+    userModel.UserModel.findById(decodedToken._id, (err, usr) => {
       if (err || !usr) {
         res.send(common.generateResponse(8));
       } else {
@@ -73,7 +73,7 @@ router.post('/userInterests/', (req, res) => {
 router.post('/userSignUp/', (req, res) => {
   userModel.UserModel.findOne({email: req.body.email}, (err, foundUser) => {
     console.log(foundUser);
-    if (!err || foundUser) {
+    if (!err && foundUser) {
       res.send(common.generateResponse(6));
     } else {
         const newUserObject = new userModel.UserModel({
