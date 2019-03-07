@@ -10,7 +10,9 @@ const code_gen = {
     1: 'Error',
     2: 'Invalid Password',
     3: 'Invalid email or User does not exisit',
-    4: 'Logout successfull'
+    4: 'Logout successfull',
+    5: 'Another Change Password Request is in progress',
+    6: 'Email already registered'
 };
 function generateResponse(code, result, message) {
     if (!message) {

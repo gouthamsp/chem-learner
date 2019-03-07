@@ -12,7 +12,12 @@ var userSchema = new mongoose.Schema({
     email: 'string',
     password: 'string',
     phone: 'string',
-    bloodGroup: 'string'
+    bloodGroup: 'string',
+    changePassword: {
+        type: 'boolean',
+        default: false,
+        required: false
+    }
 });
 
 var UserModel = mongoose.model('user', userSchema);
