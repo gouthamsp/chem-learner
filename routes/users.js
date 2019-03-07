@@ -112,4 +112,33 @@ router.post('/signIn', (req, res) => {
 });
 
 
+/* To submit a password change -- endpoint --> /users/changePassword/ POST */
+router.post('/changePassword/', (req, res) => {
+  // TODO: Write logic for changing password
+  res.send(common.generateResponse(0));
+});
+
+
+/* To request for a password change -- endpoint --> /users/changePassword/ GET */
+router.get('/changePassword/', (req, res) => {
+  // TODO: Write logic for allowing to change password
+
+  const emailAddress = req.query.email;
+  userModel.UserModel.findOne({ email: emailAddress, changePassword: true }, (err, usr) => {
+    if (usr.changePassword) {
+      res.send(common.generateResponse(5));
+      return;
+    }
+  });
+
+  userModel.UserModel.findOneAndUpdate({ email: emailAddress }, { $set: { changePassword: true }}, (err, usr) => {
+    if (err || !usr) {
+      res.send(common.generateResponse(3));
+    } else if (usr.changePassword) {
+      res.send(common.generateResponse(0));
+    }
+  });
+});
+
+
 module.exports = router;

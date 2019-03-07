@@ -15,8 +15,11 @@ const code_gen = {
     6: 'User already Exists',
     7: 'No Auth token provided or Invalid Auth token provided',
     8: 'Invalid Auth Token',
-    9: 'User already onboarded'
+    9: 'User already onboarded',
+    10: 'Another Change Password Request is in progress'
 };
+
+
 function generateResponse(code, result, message) {
     if (!message) {
         message = code_gen[code];

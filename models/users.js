@@ -40,6 +40,11 @@ var userSchema = new mongoose.Schema({
         type: 'boolean',
         default: false,
         required: false
+    },
+    changePassword: {
+        type: 'boolean',
+      default: false,
+      required: false
     }
 });
 
