@@ -7,8 +7,69 @@ const mongoose = require('mongoose');
 const objectId = mongoose.Types.ObjectId;
 
 
+/* Change User preferences -- endpoint --> /users/userPreferences/ */
+router.post('/userPreferences/', (req, res) => {
+  const auth_token = req.headers['authorization'] || '';
+  const decodedToken = common.decodeUserToken(auth_token);
+  if (decodedToken) {
+    userModel.UserModel.findById(decodedToken._id, (err, usr) => {
+      if (err || !usr) {
+        res.send(common.generateResponse(8));
+      } else {
+        try {
+          if (req.body.favoriteTheme) {
+            usr.interests.favoriteTheme = req.body.favoriteTheme;
+          }
+          if (req.body.organicOrInorganic) {
+            usr.interests.organicOrInorganic = req.body.organicOrInorganic;
+          }
+          usr.save();
+          res.send(common.generateResponse(0));
+        } catch (err) {
+          console.log("Error in user preferences: ", err);
+          res.send(common.generateResponse(5));
+        }
+      }
+    });
+  }
+});
 
-/* Create a new User -- endpoint --> /users/createUser/ POST */
+
+/* User onboarding and interests within Chemisty --endpoint --> /users/userInterests/ */
+router.post('/userInterests/', (req, res) => {
+  const auth_token = req.headers['authorization'] || '';
+  const decodedToken = common.decodeUserToken(auth_token);
+  if (decodedToken) {
+    userModel.UserModel.findById(decodedToken._id, (err, usr) => {
+      if (err || !usr) {
+        res.send(common.generateResponse(8));
+      } else {
+        try {
+          if (usr.isOnboarded) {
+            res.send(common.generateResponse(9));
+          } else {
+            var userInterests = {
+              organicOrInorganic: req.body.organicOrInorganic,
+              favoriteTheme: req.body.favoriteTheme
+            };
+            usr.interests = userInterests;
+            usr.isOnboarded = true;
+            usr.save();
+            res.send(common.generateResponse(0));
+          }
+        } catch (err) {
+          console.log('Error here: ', err);
+          res.send(common.generateResponse(5));
+        }
+      }
+    });
+  } else {
+    res.send(common.generateResponse(7));
+  }
+});
+
+
+/* Create a new User -- endpoint --> /users/userSignUp/ POST */
 
 router.post('/userSignUp/', (req, res) => {
   userModel.UserModel.findOne({email: req.body.email}, (err, foundUser) => {
@@ -31,6 +92,7 @@ router.post('/userSignUp/', (req, res) => {
 });
 
 
+/* Sign a user in with a jwt -- endpoint --> /users/signIn/ POST */
 router.post('/signIn', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -89,7 +151,6 @@ router.get('/changePassword/', (req, res) => {
 
   userModel.UserModel.findOneAndUpdate({ email: emailAddress }, { $set: { changePassword: true }}, (err, usr) => {
     if (err || !usr) {
-      console.log('Error finding user or User doesnot exist --> ', err);
       res.send(common.generateResponse(3));
     } else {
       if (!passwordChange) {
@@ -100,5 +161,6 @@ router.get('/changePassword/', (req, res) => {
     }
   });
 });
+
 
 module.exports = router;
