@@ -3,7 +3,8 @@ var router = express.Router();
 const sha256 = require('sha256');
 const userModel = require('../models/users');
 const common = require('./common');
-
+const mongoose = require('mongoose');
+const objectId = mongoose.Types.ObjectId;
 
 
 /* Change User preferences -- endpoint --> /users/userPreferences/ */
@@ -81,7 +82,8 @@ router.post('/userSignUp/', (req, res) => {
           password: sha256(req.body.password),
           phone: req.body.phone,
           name: req.body.name,
-          isStudent: req.body.isStudent
+          isStudent: req.body.isStudent,
+          changePassword: false
         });
         newUserObject.save();
         res.send(common.generateResponse(0));
@@ -112,30 +114,50 @@ router.post('/signIn', (req, res) => {
 });
 
 
-/* To submit a password change -- endpoint --> /users/changePassword/ POST */
-router.post('/changePassword/', (req, res) => {
+/* To submit a password change -- endpoint --> /users/newPassword/ POST */
+router.post('/newPassword/', (req, res) => {
   // TODO: Write logic for changing password
-  res.send(common.generateResponse(0));
+
+  const tempToken = req.headers['authorization'];
+  const decodedTempToken = common.decodeUserToken(tempToken);
+  console.log('New password is:', req.body.password);
+  if (!decodedTempToken) {
+    res.send(common.generateResponse(7));
+    return;
+  }
+  userModel.UserModel.findOneAndUpdate({ _id: decodedTempToken._id }, { $set: { changePassword: false, password: sha256(req.body.password) }}, (err, usr) => {
+    if (err || !usr) {
+      res.send(common.generateResponse(5));
+    } else {
+      console.log(usr);
+      res.send(common.generateResponse(0));
+    }
+  });
 });
 
 
 /* To request for a password change -- endpoint --> /users/changePassword/ GET */
 router.get('/changePassword/', (req, res) => {
-  // TODO: Write logic for allowing to change password
 
   const emailAddress = req.query.email;
+  var passwordChange = false;
   userModel.UserModel.findOne({ email: emailAddress, changePassword: true }, (err, usr) => {
-    if (usr.changePassword) {
-      res.send(common.generateResponse(5));
-      return;
+    if (err || !usr) {
+      passwordChange = false;
+    } else if (usr.changePassword) {
+      passwordChange = true;
     }
   });
 
   userModel.UserModel.findOneAndUpdate({ email: emailAddress }, { $set: { changePassword: true }}, (err, usr) => {
     if (err || !usr) {
       res.send(common.generateResponse(3));
-    } else if (usr.changePassword) {
-      res.send(common.generateResponse(0));
+    } else {
+      if (!passwordChange) {
+        common.generateUserToken(usr._id, res);
+      } else {
+        res.send(common.generateResponse(10));
+      }
     }
   });
 });
