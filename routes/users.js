@@ -4,7 +4,6 @@ const sha256 = require('sha256');
 const userModel = require('../models/users');
 const common = require('./common');
 const mongoose = require('mongoose');
-const objectId = mongoose.Types.ObjectId;
 
 
 /* Change User preferences -- endpoint --> /users/userPreferences/ */
@@ -31,6 +30,8 @@ router.post('/userPreferences/', (req, res) => {
         }
       }
     });
+  } else {
+    res.send(common.generateResponse(8));
   }
 });
 

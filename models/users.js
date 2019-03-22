@@ -10,19 +10,19 @@ const sha256 = require('sha256');
 
 var userSchema = new mongoose.Schema({
     name: {
-        type: 'string',
+        type: String,
         required: true
     },
     email: {
-        type: 'string',
+        type: String,
         required: true
     },
     password: {
-        type: 'string',
+        type: String,
         required: true
     },
     phone: {
-        type: 'string',
+        type: String,
         required: true
     },
     interests: {
@@ -32,17 +32,17 @@ var userSchema = new mongoose.Schema({
         required: false
     },
     isStudent: {
-        type: 'boolean',
+        type: Boolean,
         default: true,
         required: true
     },
     isOnboarded: {
-        type: 'boolean',
+        type: Boolean,
         default: false,
         required: false
     },
     changePassword: {
-        type: 'boolean',
+        type: Boolean,
       default: false,
       required: false
     }

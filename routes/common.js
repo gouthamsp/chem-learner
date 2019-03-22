@@ -16,7 +16,8 @@ const code_gen = {
     7: 'No Auth token provided or Invalid Auth token provided',
     8: 'Invalid Auth Token',
     9: 'User already onboarded',
-    10: 'Another Change Password Request is in progress'
+    10: 'Another Change Password Request is in progress',
+    11: 'Chemical Already Exists'
 };
 
 
@@ -59,8 +60,7 @@ function generateUserToken(userId, res) {
         } else {
             console.log(usr.email);
             const payload = {
-                _id: usr._id,
-                isStudent: usr.isStudent
+                _id: usr._id
             }
             const generatedToken = jsonwebtoken.sign(payload, environmentVariables.apiIdentifier);
             console.log('Generated Token is : ', generatedToken);
